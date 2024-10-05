@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Reading weather data CSV and parsing the "day" column as date type
-weather_report = pd.read_csv("C:\\Users\\Prashant Jha\\Desktop\\weather_data.csv", parse_dates=["day"])
+weather_report = pd.read_csv("weather_data.csv", parse_dates=["day"])
 weather_report.set_index("day", inplace=True)
 
 # Forward filling: Filling missing values (NaN) with the previous day's data
