@@ -1,43 +1,37 @@
-# Here we will be working on the CSV file which is a weather report:
 import pandas as pd
 
-# Reading the CSV file containing weather data
-weather_data = pd.read_csv("C:\\Users\\Prashant Jha\\Desktop\\weather_data.csv")
+# Reading weather data CSV and parsing the "day" column as date type
+weather_report = pd.read_csv("C:\\Users\\Prashant Jha\\Desktop\\weather_data.csv", parse_dates=["day"])
+weather_report.set_index("day", inplace=True)
 
-# Printing the complete data
-print(weather_data)
+# Forward filling: Filling missing values (NaN) with the previous day's data
+ffill = weather_report.fillna(method="ffill")
+# print(ffill)
 
-# Printing selected columns (temperature and windspeed)
-print(weather_data[["temperature", "windspeed"]])
+# Backward filling: Filling missing values (NaN) with the next day's data
+bfill = weather_report.fillna(method="bfill")
+# print(bfill)
 
-# Printing the type of the data
-print(type(weather_data))
+# Filling missing values along the column axis using backward filling
+new = weather_report.fillna(method="bfill", axis="columns")
+# print(new)
 
-# Printing the shape of the data (number of rows and columns)
-print(weather_data.shape)
+# Interpolating missing data using time-based linear interpolation
+weather_report.interpolate(method="time")
+# print(weather_report)
 
-# Adding a new column 'index' and setting it as the index
-weather_data["index"] = range(1, weather_data.shape[0] + 1)
-weather_data.set_index("index", inplace=True)
-print(weather_data)
+# Dropping rows with NaN values (if how="all", it drops rows where all values are NaN)
+weather_report.dropna()  # inplace=True, how="all"
+# print(weather_report)
 
-# Printing maximum, mean, minimum, and standard deviation of temperature
-print("Maximum temperature is " + str(weather_data["temperature"].max()))
-print("Mean temperature is " + str(weather_data["temperature"].mean()))
-print("Minimum temperature is " + str(weather_data["temperature"].min()))
-print("Std temperature is " + str(weather_data["temperature"].std()))
+# Dropping rows with less than 1 non-NaN value (controlled by thresh parameter)
+weather_report.dropna(thresh=1)  # inplace=True
+# print(weather_report)
 
-# Describing statistics of the data
-print(weather_data.describe())
+# Reindexing the DataFrame using a new date range
+dt = pd.date_range("01-01-2017", "26-01-2017")
+ind = pd.DatetimeIndex(dt)
+weather_report.reindex(ind)
 
-# Printing data based on certain conditions
-print(weather_data[weather_data["temperature"] > 30])  # Where temperature is above 30
-print(weather_data[(weather_data["temperature"] > 30) & (weather_data["temperature"] < 33)])  # Temperature between 30 and 33
-print(weather_data[(weather_data.temperature > 32) | (weather_data.temperature < 25)])  # Temperature above 32 or below 25
-
-# Creating a DataFrame using a Python list of tuples
-data = [("Jan", 23, 7), ("Feb", 24, 8), ("Mar", 30, 6), ("April", 32, 8), ("May", 34, 9), ("Jun", 35, 9)]
-pd_data = pd.DataFrame(data, columns=["Months", "Temperature", "WindSpeed"])
-
-# Printing the new DataFrame
-print(pd_data)
+# Printing the updated weather report
+print(weather_report)
